@@ -68,6 +68,15 @@
 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
 (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
 
+;; autocomplete
+
+(use-package auto-complete
+  :ensure t
+  :init
+  (progn
+    (ac-config-default)
+    (global-auto-complete-mode t)))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -76,7 +85,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (counsel swiper org-bullets which-key use-package try))))
+    (auto-complete counsel swiper org-bullets which-key use-package try))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
