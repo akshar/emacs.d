@@ -77,6 +77,10 @@
     (ac-config-default)
     (global-auto-complete-mode t)))
 
+(use-package zenburn-theme
+  :ensure t
+  :config (load-theme 'zenburn t))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -85,7 +89,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (auto-complete counsel swiper org-bullets which-key use-package try))))
+    (zenburn-theme auto-complete counsel swiper org-bullets which-key use-package try))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
