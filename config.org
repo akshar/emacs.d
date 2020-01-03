@@ -79,6 +79,7 @@
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
   #+END_SRC
 
+
 * Autocomplete 
 #+BEGIN_SRC emacs-lisp
 (use-package auto-complete
@@ -89,6 +90,22 @@
     (global-auto-complete-mode t)))
 #+END_SRC
 
+* Reveal.js
+#+BEGIN_SRC emacs-lisp
+(use-package ox-reveal
+  :ensure ox-reveal)
+  (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+  (setq org-reveal-mathjax t)
+#+END_SRC
+
+
+* Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init
+    (global-flycheck-mode t))
+#+END_SRC
 
 * Customizations:
 ** Theme
@@ -98,3 +115,13 @@
   :config (load-theme 'zenburn t))
  #+END_SRC
 
+
+
+* YASnippet
+  It allows you to type an abbreviation and automatically expand it into function templates.
+  (https://github.com/joaotavora/yasnippet#where-are-the-snippets => follow instructions to add snippets)
+  #+BEGIN_SRC emacs-lisp
+    (use-package yasnippet
+      :ensure t
+      :init (yas-global-mode 1))
+  #+END_SRC
