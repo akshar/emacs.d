@@ -5,9 +5,10 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (defalias 'list-buffers 'ibuffer)
-(windmove-default-keybindings) ;; shift+ arrow keys to movearound buffers
+(windmove-default-keybindings)
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
+(global-hl-line-mode t)
 #+END_SRC
 
 
@@ -43,6 +44,7 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 #+END_SRC
+
 
 * Counsel
 #+BEGIN_SRC emacs-lisp
@@ -90,6 +92,7 @@
     (global-auto-complete-mode t)))
 #+END_SRC
 
+
 * Reveal.js
 #+BEGIN_SRC emacs-lisp
 (use-package ox-reveal
@@ -107,6 +110,7 @@
     (global-flycheck-mode t))
 #+END_SRC
 
+
 * Customizations:
 ** Theme
  #+BEGIN_SRC emacs-lisp
@@ -115,7 +119,20 @@
   :config (load-theme 'zenburn t))
  #+END_SRC
 
-
+** Beacon
+ #+BEGIN_SRC emacs-lisp
+   (use-package beacon
+     :ensure t
+     :config
+     (beacon-mode 1)
+     (setq beacon-color "red")
+     (setq beacon-blink-delay 0.4)
+     (setq beacon-blink-duration 0.4)
+     (setq beacon-blink-when-point-moves 7)
+     (setq beacon-push-mark 5)
+     (setq beacon-size 25))
+ #+END_SRC
+  
 
 * YASnippet
   It allows you to type an abbreviation and automatically expand it into function templates.
@@ -133,4 +150,14 @@
       :ensure t
       :init 
       (global-undo-tree-mode))
+  #+END_SRC
+
+
+
+* Expand Region
+  #+BEGIN_SRC emacs-lisp
+    (use-package expand-region
+      :ensure t
+      :config
+      (global-set-key (kbd "C-=") 'er/expand-region))
   #+END_SRC
