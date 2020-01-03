@@ -118,10 +118,22 @@
 * Customizations:
 ** Theme
  #+BEGIN_SRC emacs-lisp
- (use-package zenburn-theme
-  :ensure t
-  :config (load-theme 'zenburn t))
+   (use-package monokai-theme
+    :ensure t
+    :config (load-theme 'monokai t))
+   (set-face-attribute 'default nil :height 150)
+   (set-face-attribute 'mode-line nil
+                        :height 120
+			:foreground "Black"
+			:background "DarkOrange"
+			:box nil)
+   (set-face-attribute 'isearch nil
+		       :foreground "#000000"
+		       :background "#ffff00")
+
  #+END_SRC
+
+ #+RESULTS:
 
 ** Beacon
  #+BEGIN_SRC emacs-lisp
