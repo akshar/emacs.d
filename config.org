@@ -1,16 +1,73 @@
-* Interface tweaks
+* Intgerface tweaks
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-(tool-bar-mode -1)
-(fset 'yes-or-no-p 'y-or-n-p)
+   (setq inhibit-startup-message t)
+   (setq powerline-arrow-shape 'curve)
+   (tool-bar-mode -1)
+   (fset 'yes-or-no-p 'y-or-n-p)
 
-(defalias 'list-buffers 'ibuffer)
-(windmove-default-keybindings)
+   (defalias 'list-buffers 'ibuffer)
+   (windmove-default-keybindings)
 
-(global-set-key (kbd "<f5>") 'revert-buffer)
-(global-hl-line-mode t) ;;highlight current line
-(global-auto-revert-mode 1) ;; revert-buffer on save.
+
+   (defmacro move-back-horizontal-after (&rest code)
+     `(let ((horizontal-position (current-column)))
+	(progn
+	  ,@code
+	  (move-to-column horizontal-position))))
+
+   (defun comment-or-uncomment-line-or-region ()
+     (interactive)
+     (if (region-active-p)
+	 (comment-or-uncomment-region (region-beginning) (region-end))
+       (move-back-horizontal-after
+	(comment-or-uncomment-region (line-beginning-position) (line-end-position))
+	(forward-line 1))))
+
+
+
+   (global-set-key (kbd "M-;") 'comment-or-uncomment-line-or-region)
+   (global-set-key (kbd "<f5>") 'revert-buffer)
+   (global-hl-line-mode t) ;;highlight current line
+   (global-auto-revert-mode 1) ;; revert-buffer on save.
+   (global-set-key (kbd "M-s-<right>") 'switch-to-next-buffer)
+   (global-set-key (kbd "M-s-<left>") 'switch-to-prev-buffer)
+   (global-set-key (kbd "s-Z") 'undo-tree-redo)
+   
 #+END_SRC
+
+
+
+
+* Grep 
+** ripgrep
+   #+BEGIN_SRC emacs-lisp
+   (use-package ripgrep
+   :ensure t)
+   #+END_SRC
+** projectile-ripgrep
+   #+BEGIN_SRC emacs-lisp
+   (use-package projectile-ripgrep
+   :bind (("C-c g" . projectile-ripgrep)))
+   #+END_SRC
+
+
+* Projectile
+  #+BEGIN_SRC emacs-lisp
+    (use-package projectile
+	  :ensure t
+	  :bind ("C-c p" . projectile-command-map)
+	  :config
+	  (projectile-global-mode)
+	  (setq projectile-completion-system 'ivy))
+
+	  (global-set-key (kbd "s-t") 'projectile-find-file)
+	  (global-set-key (kbd "s-g") 'projectile-grep)
+	  (global-set-key (kbd "s-p") 'projectile-switch-project)
+
+    ;(use-package counsel-projectile
+    ;  :config
+    ;  (setq counsel-projectile-on t))
+  #+END_SRC
 
 
 * try 
@@ -115,12 +172,12 @@
 #+END_SRC
 
 
-* Customizations:
+* Customizations: 
 ** Theme
  #+BEGIN_SRC emacs-lisp
-   (use-package monokai-theme
+   (use-package material-theme
     :ensure t
-    :config (load-theme 'monokai t))
+    :config (load-theme 'material t))
    (set-face-attribute 'default nil :height 150)
    (set-face-attribute 'mode-line nil
                         :height 120
