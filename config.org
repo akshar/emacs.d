@@ -99,7 +99,9 @@
 	  :bind ("C-c p" . projectile-command-map)
 	  :config
 	  (projectile-global-mode)
-	  (setq projectile-completion-system 'ivy))
+	  (setq projectile-completion-system 'ivy)
+	  (setq-default projectile-enable-caching t
+                        projectile-mode-line '(:eval (projectile-project-name))))
 
 	  (global-set-key (kbd "s-t") 'projectile-find-file)
 	  (global-set-key (kbd "s-g") 'projectile-grep)
@@ -237,7 +239,7 @@
     :config (load-theme 'material t))
    (set-face-attribute 'default nil :height 150)
    (set-face-attribute 'mode-line nil
-                        :height 120
+                        :height 130
 			:foreground "Black"
 			:background "DarkOrange"
 			:box nil)
