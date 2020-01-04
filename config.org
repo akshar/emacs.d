@@ -51,6 +51,19 @@
    #+END_SRC
 
 
+* Ag
+  silver searcher
+  #+BEGIN_SRC emacs-lisp
+    (use-package ag
+      :ensure t
+      :commands (ag ag-files ag-regexp ag-project ag-dired helm-ag)
+      :config (setq ag-highlight-search t
+		    ag-reuse-buffers t))
+  #+END_SRC
+
+
+
+
 * Dumb jump
   jump to definition
   #+BEGIN_SRC emacs-lisp
@@ -311,12 +324,13 @@
 
 * Aggresive Indent
   #+BEGIN_SRC emacs-lisp
-    (use-package aggresive-indent
+    (use-package aggressive-indent
       :ensure t
       :config
       (global-aggressive-indent-mode 1)
       ;;(add-to-list 'aggressive-indent-excluded-modes 'html-mode)
       )
   #+END_SRC
+
 
 
