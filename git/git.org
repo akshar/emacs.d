@@ -13,3 +13,17 @@
   #+END_SRC
 
 
+
+* Magit
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :bind ("C-x g" . magit-status)
+      :config
+      (setq
+       magit-status-margin '(t "%Y-%m-%d %H:%M " magit-log-margin-width t 18)
+       magit-commit-arguments nil
+       magit-diff-use-overlays nil
+       magit-diff-refine-hunk t))
+
+  #+END_SRC
+
