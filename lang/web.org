@@ -24,3 +24,13 @@
   #+END_SRC
 
 
+
+
+* Emmet
+  #+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+  :config
+  (add-hook 'sgml-mode-hook 'emmet-mode)
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'css-mode-hook 'emmet-mode))
+  #+END_SRC
