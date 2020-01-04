@@ -10,6 +10,7 @@
 
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
 (org-babel-load-file (expand-file-name "~/.emacs.d/lang/web.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/lang/clojure.org"))
 (org-babel-load-file (expand-file-name "~/.emacs.d/git/git.org"))
 
 
