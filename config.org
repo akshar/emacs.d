@@ -173,12 +173,28 @@
 
 * Autocomplete 
 #+BEGIN_SRC emacs-lisp
-(use-package auto-complete
-  :ensure t
-  :init
-  (progn
-    (ac-config-default)
-    (global-auto-complete-mode t)))
+  (use-package company
+    :ensure t
+    :bind (("C-c C-/" . company-complete))
+    :config (global-company-mode)
+    (setq company-idle-delay 0.2)
+    (setq company-require-match nil)
+    (setq company-selection-wrap-around t)
+    (setq company-tooltip-align-annotations t)
+    (setq company-tooltip-flip-when-above t)
+    (setq company-transformers '(company-sort-by-occurrence))
+    (define-key company-active-map (kbd "C-n") 'company-select-next)
+    (define-key company-active-map (kbd "C-p") 'company-select-previous)
+    (define-key company-search-map (kbd "C-n") 'company-select-next)
+    (define-key company-search-map (kbd "C-p") 'company-select-previous)
+    (define-key company-search-map (kbd "C-t") 'company-search-toggle-filtering))
+
+  ;; (use-package auto-complete
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     (ac-config-default)
+  ;;     (global-auto-complete-mode t)))
 #+END_SRC
 
 
