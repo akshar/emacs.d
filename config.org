@@ -1,39 +1,52 @@
 * Intgerface tweaks
 #+BEGIN_SRC emacs-lisp
-   (setq inhibit-startup-message t)
-   (setq powerline-arrow-shape 'curve)
-   (tool-bar-mode -1)
-   (fset 'yes-or-no-p 'y-or-n-p)
+  (setq inhibit-startup-message t)
+  (setq powerline-arrow-shape 'curve)
+  (tool-bar-mode -1)
+  (fset 'yes-or-no-p 'y-or-n-p)
 
-   (defalias 'list-buffers 'ibuffer)
-   (windmove-default-keybindings)
-
-
-   (defmacro move-back-horizontal-after (&rest code)
-     `(let ((horizontal-position (current-column)))
-	(progn
-	  ,@code
-	  (move-to-column horizontal-position))))
-
-   (defun comment-or-uncomment-line-or-region ()
-     (interactive)
-     (if (region-active-p)
-	 (comment-or-uncomment-region (region-beginning) (region-end))
-       (move-back-horizontal-after
-	(comment-or-uncomment-region (line-beginning-position) (line-end-position))
-	(forward-line 1))))
+  (defalias 'list-buffers 'ibuffer)
+  (windmove-default-keybindings)
 
 
+  (defmacro move-back-horizontal-after (&rest code)
+    `(let ((horizontal-position (current-column)))
+       (progn
+	 ,@code
+	 (move-to-column horizontal-position))))
 
-   (global-set-key (kbd "M-;") 'comment-or-uncomment-line-or-region)
-   (global-set-key (kbd "<f5>") 'revert-buffer)
-   (global-hl-line-mode t) ;;highlight current line
-   (global-auto-revert-mode 1) ;; revert-buffer on save.
-   (global-set-key (kbd "M-s-<right>") 'switch-to-next-buffer)
-   (global-set-key (kbd "M-s-<left>") 'switch-to-prev-buffer)
-   (global-set-key (kbd "s-Z") 'undo-tree-redo)
-   
+  (defun comment-or-uncomment-line-or-region ()
+    (interactive)
+    (if (region-active-p)
+	(comment-or-uncomment-region (region-beginning) (region-end))
+      (move-back-horizontal-after
+       (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+       (forward-line 1))))
+
+
+
+  (global-set-key (kbd "M-;") 'comment-or-uncomment-line-or-region)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+  (global-hl-line-mode t) ;;highlight current line
+  (global-auto-revert-mode 1) ;; revert-buffer on save.
+  (global-set-key (kbd "M-s-<right>") 'switch-to-next-buffer)
+  (global-set-key (kbd "M-s-<left>") 'switch-to-prev-buffer)
+  (global-set-key (kbd "s-Z") 'undo-tree-redo)
+
+  (electric-pair-mode 1)
+  ;;parens
+  (require 'paren)
+  (show-paren-mode 1)
+  (setq show-paren-delay 1)
+  (set-face-background 'show-paren-match (face-background 'default))
+  (if (eq (frame-parameter nil 'background-mode) 'dark)
+      (set-face-foreground 'show-paren-match "red")
+    (set-face-foreground 'show-paren-match "black"))
+  (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+
 #+END_SRC
+
+#+RESULTS:
 
 
 
@@ -350,3 +363,10 @@
 
 
 
+
+* Rainbow Delimiters
+  #+BEGIN_SRC emacs-lisp
+    (use-package rainbow-delimiters
+      :ensure t
+      :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  #+END_SRC
