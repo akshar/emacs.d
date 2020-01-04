@@ -1,0 +1,26 @@
+* Web Mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package web-mode
+      :defer t
+      :init (add-hook 'before-save-hook 'web-mode-buffer-indent)    ;;indent buffer before saving
+      :mode (("\\.html?\\'" . web-mode)
+	     ("\\.css?\\'" . web-mode)
+	     ("\\.mustache\\'" . web-mode)
+	     ("\\.erb\\'" . web-mode))
+      :config
+      (setq-default indent-tabs-mode nil)
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-code-indent-offset 2)
+      (setq web-mode-css-indent-offset 2)
+      (setq web-mode-script-padding 0)
+      (setq web-mode-enable-auto-expanding t)
+      (setq web-mode-enable-css-colorization t)
+      (setq web-mode-enable-auto-pairing nil)
+      (setq web-mode-enable-auto-closing t)
+      (setq web-mode-enable-auto-quoting t)
+      (setq web-mode-auto-close-style 2)      ;;close after opening-tag
+      (setq web-mode-auto-quote-style 2))     ;;use single-quotes for attributes(requires v15)
+
+  #+END_SRC
+
+
