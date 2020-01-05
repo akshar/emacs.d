@@ -1,4 +1,4 @@
-* Intgerface tweaks
+* Interface tweaks
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (setq powerline-arrow-shape 'curve)
