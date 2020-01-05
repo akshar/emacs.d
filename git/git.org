@@ -2,6 +2,7 @@
   #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
     :ensure t
+    :defer 2
     :init (global-git-gutter-mode t))
   #+END_SRC
 
