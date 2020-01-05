@@ -1,6 +1,7 @@
 * Web Mode
   #+BEGIN_SRC emacs-lisp
     (use-package web-mode
+      :ensure t
       :defer t
       :init (add-hook 'before-save-hook 'web-mode-buffer-indent)    ;;indent buffer before saving
       :mode (("\\.html?\\'" . web-mode)
@@ -28,9 +29,10 @@
 
 * Emmet
   #+BEGIN_SRC emacs-lisp
-  (use-package emmet-mode
-  :config
-  (add-hook 'sgml-mode-hook 'emmet-mode)
-  (add-hook 'web-mode-hook 'emmet-mode)
-  (add-hook 'css-mode-hook 'emmet-mode))
+    (use-package emmet-mode
+      :ensure t
+      :config
+      (add-hook 'sgml-mode-hook 'emmet-mode)
+      (add-hook 'web-mode-hook 'emmet-mode)
+      (add-hook 'css-mode-hook 'emmet-mode))
   #+END_SRC
