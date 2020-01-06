@@ -5,6 +5,8 @@
   (tool-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
 
+  (global-display-line-numbers-mode)
+
   (defalias 'list-buffers 'ibuffer)
   (windmove-default-keybindings)
 
@@ -241,7 +243,7 @@
     :config (load-theme 'material t))
    (set-face-attribute 'default nil :height 150)
    (set-face-attribute 'mode-line nil
-                        :height 130
+                        :height 140
 			:foreground "Black"
 			:background "DarkOrange"
 			:box nil)
