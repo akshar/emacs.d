@@ -2,12 +2,14 @@
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (setq powerline-arrow-shape 'curve)
+  
+
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  ;;(global-display-line-numbers-mode)
-  (global-linum-mode t)
+  (global-display-line-numbers-mode)
+  ;;(global-linum-mode t)
 
   (defalias 'list-buffers 'ibuffer)
   (windmove-default-keybindings)
