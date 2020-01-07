@@ -2,7 +2,16 @@
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (setq powerline-arrow-shape 'curve)
-  
+
+  ;; show file path in title bar
+  (setq
+   frame-title-format
+   '((:eval (if (buffer-file-name)
+		(abbreviate-file-name (buffer-file-name))
+	      "%b"))))
+
+  ;;(setq-default frame-title-format "%b (%f)")
+
 
   (tool-bar-mode -1)
   (scroll-bar-mode -1)

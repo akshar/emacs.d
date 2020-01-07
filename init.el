@@ -1,9 +1,11 @@
 (require 'package)
+(setq package-check-signature nil)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 
 (package-initialize)
+
 
 ;;https://blog.d46.us/advanced-emacs-startup/
 (setq gc-cons-threshold 50000000)
