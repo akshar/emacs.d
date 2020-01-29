@@ -2,7 +2,7 @@
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (setq powerline-arrow-shape 'curve)
-
+  (setq make-backup-files nil)
   ;; show file path in title bar
   (setq
    frame-title-format
