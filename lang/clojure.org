@@ -61,7 +61,7 @@
            cider-repl-display-help-banner nil
            cider-repl-result-prefix ";; => ")
            :config
-	   (define-key cider-mode-map (kbd "s-c")
+	   (define-key cider-mode-map (kbd "M-c")
 	   'cider-pprint-eval-defun-to-comment)
            (add-hook 'cider-mode-hook #'eldoc-mode)
            (add-hook 'cider-mode-hook #'company-mode)
