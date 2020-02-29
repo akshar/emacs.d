@@ -36,3 +36,60 @@
       (add-hook 'web-mode-hook 'emmet-mode)
       (add-hook 'css-mode-hook 'emmet-mode))
   #+END_SRC
+
+
+* css mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package css-mode
+      :ensure nil
+      :init (setq css-indent-offset 2))
+  #+END_SRC
+
+
+* SCSS mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package scss-mode
+      :init
+      ;; Disable complilation on save
+      (setq scss-compile-at-save nil))
+  #+END_SRC
+
+
+* CSS eldoc
+  #+BEGIN_SRC emacs-lisp
+    (use-package css-eldoc
+      :commands turn-on-css-eldoc
+      :hook ((css-mode scss-mode less-css-mode) . turn-on-css-eldoc))
+  #+END_SRC
+
+
+* JSON mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package json-mode
+      :ensure t
+      :mode (("\\.json\\'" . json-mode)
+	     ("\\.tmpl\\'" . json-mode)
+	     ("\\.eslintrc\\'" . json-mode))
+      :config (setq-default js-indent-level 2))
+  #+END_SRC
+
+
+* JSON reformat
+  #+BEGIN_SRC emacs-lisp
+    (use-package json-reformat
+      :ensure t
+      :after json-mode
+      :bind (("C-c r" . json-reformat-region)))
+  #+END_SRC
+
+
+* YAML mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package yaml-mode
+      :ensure t
+      :mode ("\\.ya?ml\\'" . yaml-mode))
+
+  #+END_SRC
+
+
+
