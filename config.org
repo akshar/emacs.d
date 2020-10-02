@@ -67,7 +67,7 @@
 * Grep 
 ** ripgrep
    #+BEGIN_SRC emacs-lisp
-   (use-package ripgrep
+   (use-package ripgrep ;; brew install ripgrep
    :ensure t)
    #+END_SRC
 ** projectile-ripgrep
@@ -80,9 +80,9 @@
 * Ag
   silver searcher
   #+BEGIN_SRC emacs-lisp
-    (use-package ag
+    (use-package ag ;;brew install the_silver_searcher
       :ensure t
-      :commands (ag ag-files ag-regexp ag-project ag-dired helm-ag)
+      :commands (ag ag-files ag-regexp ag-project ag-dired helm-ag) 
       :config (setq ag-highlight-search t
 		    ag-reuse-buffers t))
   #+END_SRC
