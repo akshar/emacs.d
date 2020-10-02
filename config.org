@@ -263,23 +263,28 @@
 * Customizations: 
 ** Theme
  #+BEGIN_SRC emacs-lisp
-   (use-package material-theme
-    :ensure t
-    :config (load-theme 'material t))
+   ;; (use-package material-theme
+   ;;  :ensure t
+   ;;  :config (load-theme 'material t))
+   ;; (set-face-attribute 'default nil :height 150)
+   ;; (set-face-attribute 'mode-line nil
+   ;;                      :height 140
+   ;; 		     :foreground "Black"
+   ;; 		     :background "DarkOrange"
+   ;; 		     :box nil)
+   ;; (set-face-attribute 'isearch nil
+   ;; 		    :foreground "#000000"
+   ;; 		    :background "#ffff00")
+   (use-package doom-themes
+   :config
    (set-face-attribute 'default nil :height 150)
-   (set-face-attribute 'mode-line nil
-                        :height 140
-			:foreground "Black"
-			:background "DarkOrange"
-			:box nil)
-   (set-face-attribute 'isearch nil
-		       :foreground "#000000"
-		       :background "#ffff00")
-
+   (setq doom-themes-enable-bold t 
+   doom-themes-enable-italic t)
+   (load-theme 'doom-city-lights t)
+   (doom-themes-visual-bell-config)
+   (doom-themes-neotree-config)
+   (doom-themes-org-config))
  #+END_SRC
-
- #+RESULTS:
-
 ** Beacon
  #+BEGIN_SRC emacs-lisp
    (use-package beacon
