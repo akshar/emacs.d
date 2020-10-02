@@ -299,7 +299,14 @@
      (setq beacon-size 25))
  #+END_SRC
   
- 
+** Modeline 
+   #+BEGIN_SRC emacs-lisp
+     ;; (use-package doom-modeline
+     ;; :ensure t
+     ;; :init (doom-modeline-mode 1))
+   #+END_SRC
+
+
 * YASnippet
   It allows you to type an abbreviation and automatically expand it into function templates.
   (https://github.com/joaotavora/yasnippet#where-are-the-snippets => follow instructions to add snippets)
