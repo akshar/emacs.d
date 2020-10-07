@@ -77,3 +77,10 @@
        :ensure t
        :defer 5)
     #+END_SRC
+
+** kibit
+  #+BEGIN_SRC emacs-lisp :results silent
+  (use-package kibit-helper
+  :ensure t)
+ #+END_SRC
+    
