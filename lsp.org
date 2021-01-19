@@ -1,0 +1,26 @@
+* LSP
+  #+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :hook ((lsp-mode . lsp-enable-which-key-integration)
+           (js-mode . lsp)
+           (js-jsx-mode . lsp)
+	   (typescript-mode . lsp)
+	   (web-mode . lsp)))
+  #+END_SRC
+
+
+
+* LSP UI
+  #+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+   :ensure t
+   :commands lsp-ui-mode)
+  #+END_SRC
+
+
+
+
+  
+ 

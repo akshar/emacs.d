@@ -7,7 +7,10 @@
       :mode (("\\.html?\\'" . web-mode)
 	     ("\\.css?\\'" . web-mode)
 	     ("\\.mustache\\'" . web-mode)
-	     ("\\.erb\\'" . web-mode))
+	     ("\\.erb\\'" . web-mode)
+	     ("\\.jsx?\\'"  . web-mode)
+             ("\\.tsx?\\'"  . web-mode)
+             ("\\.json\\'"  . web-mode))
       :config
       (setq-default indent-tabs-mode nil)
       (setq web-mode-markup-indent-offset 2)
