@@ -31,6 +31,7 @@
 (org-babel-load-file (expand-file-name "~/.emacs.d/lang/web.org"))
 (org-babel-load-file (expand-file-name "~/.emacs.d/lang/clojure.org"))
 (org-babel-load-file (expand-file-name "~/.emacs.d/lang/python.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/lang/GO.org"))
 (org-babel-load-file (expand-file-name "~/.emacs.d/git/git.org"))
 
 
