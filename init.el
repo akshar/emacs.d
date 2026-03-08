@@ -1,17 +1,19 @@
-(require 'package)
-(setq package-check-signature nil)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+;;; init.el --- Emacs 30 entry point -*- lexical-binding: t -*-
 
-(package-initialize)
+;; ---------------------------------------------------------------------------
+;; Startup performance
+;; ---------------------------------------------------------------------------
+(setq gc-cons-threshold most-positive-fixnum)
 
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold 800000)
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
-;;https://blog.d46.us/advanced-emacs-startup/
-(setq gc-cons-threshold 50000000)
-
-
-;;http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (defun my-minibuffer-setup-hook ()
   (setq gc-cons-threshold most-positive-fixnum))
 
@@ -19,19 +21,44 @@
   (setq gc-cons-threshold 800000))
 
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
+(add-hook 'minibuffer-exit-hook  #'my-minibuffer-exit-hook)
 
+;; ---------------------------------------------------------------------------
+;; Package archives
+;; ---------------------------------------------------------------------------
+(require 'package)
+(setq package-check-signature nil)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa"  . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("gnu"    . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/packages/"))
+(package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; use-package is built-in since Emacs 29 — no manual bootstrap needed.
+(require 'use-package)
+(setq use-package-always-ensure t)
 
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/lsp.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/lang/web.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/lang/clojure.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/lang/python.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/lang/GO.org"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/git/git.org"))
+;; ---------------------------------------------------------------------------
+;; Load configuration modules
+;; ---------------------------------------------------------------------------
+(defun load-config (path)
+  "Load PATH relative to `user-emacs-directory'."
+  (let ((full-path (expand-file-name path user-emacs-directory)))
+    (if (file-exists-p full-path)
+        (load full-path nil 'nomessage)
+      (warn "Config file not found: %s" full-path))))
 
+;; Redirect Emacs custom writes to a separate ignored file.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file) (load custom-file))
 
+(load-config "config.el")
+(load-config "lsp.el")
+(load-config "lang/web.el")
+(load-config "lang/clojure.el")
+(load-config "lang/python.el")
+(load-config "lang/GO.el")
+(load-config "git/git.el")
+(load-config "lang/devops.el")
+(load-config "tools/rest.el")
+(load-config "ai.el")

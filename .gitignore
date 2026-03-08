@@ -1,0 +1,35 @@
+# Installed packages — reinstall automatically on first launch
+elpa/
+eln-cache/
+
+# Caches and session state
+.cache/
+transient/
+recentf
+projectile.cache
+projectile-bookmarks.eld
+.lsp-session-v1
+cider-history
+
+# Emacs Custom — machine-specific, written by Emacs automatically
+custom.el
+
+# Undo-tree history files
+**/.~undo-tree~
+undo-tree-history/
+*~
+
+# Backup / auto-save files
+*.bak
+\#*\#
+.\#*
+auto-save/
+auto-save-list/
+
+# Session state with local paths
+history
+projects
+forge-database.sqlite
+
+# Tree-sitter compiled grammars
+tree-sitter/

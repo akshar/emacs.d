@@ -51,10 +51,8 @@
 
 * SCSS mode
   #+BEGIN_SRC emacs-lisp
-    (use-package scss-mode
-      :init
-      ;; Disable complilation on save
-      (setq scss-compile-at-save nil))
+    ;; scss-mode is built into css-mode.el (feature name is css-mode, not scss-mode)
+    (setq scss-compile-at-save nil)
   #+END_SRC
 
 

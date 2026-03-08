@@ -136,11 +136,11 @@
   #+END_SRC
 
   
-* which key 
+* which key
   Keybindings help
   #+BEGIN_SRC emacs-lisp
   (use-package which-key
-  :ensure t
+  :ensure nil  ;; built-in since Emacs 30
   :config (which-key-mode))
   #+END_SRC
 
@@ -219,19 +219,7 @@
     (define-key company-search-map (kbd "C-p") 'company-select-previous)
     (define-key company-search-map (kbd "C-t") 'company-search-toggle-filtering))
 
-  (defun my/python-mode-hook ()
-    (add-to-list 'company-backends 'company-jedi))
-
-  (add-hook 'python-mode-hook 'my/python-mode-hook)
-  (use-package company-jedi
-    :ensure t
-    :config
-    (add-hook 'python-mode-hook 'jedi:setup))
-
-  (defun my/python-mode-hook ()
-    (add-to-list 'company-backends 'company-jedi))
-
-  (add-hook 'python-mode-hook 'my/python-mode-hook)
+  ;; Python completion is handled by elpy + lsp-mode (see lang/python.org + lsp.org)
 
   ;; (use-package auto-complete
   ;;   :ensure t
