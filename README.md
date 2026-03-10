@@ -109,7 +109,8 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 | Completion UI | vertico + orderless + marginalia |
 | Search/navigation | consult |
 | In-buffer completion | corfu + cape + nerd-icons-corfu |
-| LSP | lsp-mode + lsp-ui |
+| LSP | lsp-mode + lsp-ui (Go, Clojure) |
+| JS/TS LSP | eglot (built-in, faster for monorepos) |
 | JS/TS syntax | treesit-auto (tree-sitter grammars) |
 | Formatting | apheleia (async prettier on save) |
 | Theme | doom-one (doom-themes) |
@@ -165,6 +166,18 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 - `M-.` — go to definition (via clojure-lsp)
 - `M-x lsp-rename` — workspace rename (via clojure-lsp)
 - Linting via clj-kondo (flycheck)
+
+## JS/TS — Eglot vs lsp-mode
+
+JS/TS uses **eglot** (built into Emacs 30) instead of lsp-mode. Reasons:
+- Single server instance per monorepo root (no new tsserver per `tsconfig.json`)
+- Lighter weight, faster file open in large pnpm/turbo monorepos
+
+To switch back to lsp-mode, see the comments in `lsp.el` — both configs are preserved.
+
+## Flycheck
+
+Flycheck is configured to **not run on file open** — only on save or after 2s of idle. JS/TS checkers are disabled since eglot+flymake handles diagnostics natively.
 
 ## Python virtualenvs
 

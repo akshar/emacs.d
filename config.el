@@ -269,6 +269,15 @@
 ;; ---------------------------------------------------------------------------
 (use-package flycheck
   :ensure t
+  :custom
+  ;; Don't run checker immediately on file open — wait for first save or idle
+  (flycheck-check-syntax-automatically '(save idle-change))
+  (flycheck-idle-change-delay 2.0)
+  ;; Disable flycheck for JS/TS — eglot+flymake handles diagnostics there
+  (flycheck-disabled-checkers '(javascript-eslint
+                                javascript-jshint
+                                javascript-standard
+                                typescript-tslint))
   :init (global-flycheck-mode t))
 
 ;; ---------------------------------------------------------------------------
@@ -493,7 +502,7 @@
 ;; ---------------------------------------------------------------------------
 (use-package breadcrumb
   :ensure t
-  :hook (prog-mode . breadcrumb-mode))
+  :hook (eglot-managed-mode . breadcrumb-mode))
 
 ;; ---------------------------------------------------------------------------
 ;; SQL / PostgreSQL
