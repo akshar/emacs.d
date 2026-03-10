@@ -163,17 +163,52 @@
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match    nil)
   (corfu-preselect        'prompt)
+  (corfu-popupinfo-delay  '(0.5 . 0.3))
+  (corfu-popupinfo-max-width  70)
+  (corfu-popupinfo-max-height 20)
   :bind (:map corfu-map
          ("C-n" . corfu-next)
-         ("C-p" . corfu-previous))
-  :init (global-corfu-mode))
+         ("C-p" . corfu-previous)
+         ("M-t" . corfu-popupinfo-toggle))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  :config
+  (set-face-attribute 'corfu-current nil
+                      :background "#1a6bc4"
+                      :foreground "#ffffff"
+                      :weight 'bold)
+  (set-face-attribute 'corfu-annotations nil
+                      :foreground "#c8c8c8"))
+
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package cape
   :ensure t
   :init
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-keyword))
+  :config
+  (setq cape-file-directory-must-exist nil)
+
+  (defun my/cape-file-in-string-setup ()
+    "Prepend string-aware cape-file to buffer-local completion-at-point-functions."
+    (add-hook 'completion-at-point-functions
+              (cape-capf-inside-string #'cape-file)
+              -90
+              t))
+
+  (dolist (hook '(js-ts-mode-hook
+                  tsx-ts-mode-hook
+                  typescript-ts-mode-hook
+                  go-mode-hook
+                  python-ts-mode-hook))
+    (add-hook hook #'my/cape-file-in-string-setup)))
 
 (global-set-key (kbd "C-c C-/") #'completion-at-point)
 
