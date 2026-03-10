@@ -112,6 +112,15 @@
 
 (use-package orderless
   :ensure t
+  :config
+  ;; Teach orderless to treat "foo/bar" as fuzzy path: matches "foo.*bar" anywhere
+  (defun my/orderless-path-dispatcher (pattern _index _total)
+    "When PATTERN contains '/', match it as a fuzzy path component sequence."
+    (when (string-match-p "/" pattern)
+      `(orderless-regexp . ,(mapconcat #'regexp-quote
+                                       (split-string pattern "/" t)
+                                       ".*"))))
+  (setq orderless-style-dispatchers '(my/orderless-path-dispatcher))
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
