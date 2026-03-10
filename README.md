@@ -41,6 +41,7 @@ brew install cmake libvterm       # vterm terminal emulator
 | Go (struct tags) | gomodifytags | `go install github.com/fatih/gomodifytags@latest` |
 | JS/TS | typescript-language-server | `npm install -g typescript typescript-language-server` |
 | JS/TS/CSS/JSON | prettier | `npm install -g prettier` |
+| SQL | pgformatter | `brew install pgformatter` |
 | Clojure | clojure-lsp | `brew install clojure-lsp/brew/clojure-lsp-native` |
 | Clojure (Leiningen projects) | lein | `brew install leiningen` |
 | Clojure (deps.edn projects) | Clojure CLI | `brew install clojure/tools/clojure` |
@@ -107,7 +108,7 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 |----------|---------|
 | Completion UI | vertico + orderless + marginalia |
 | Search/navigation | consult |
-| In-buffer completion | corfu + cape |
+| In-buffer completion | corfu + cape + nerd-icons-corfu |
 | LSP | lsp-mode + lsp-ui |
 | JS/TS syntax | treesit-auto (tree-sitter grammars) |
 | Formatting | apheleia (async prettier on save) |
@@ -126,6 +127,7 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 | Terminal | vterm |
 | REST client | restclient (.http files) |
 | AI | gptel (Claude/AI chat) |
+| SQL | sql-indent, sqlformat (pgformatter) |
 | DevOps | dockerfile-mode, terraform-mode, nginx-mode |
 
 ## Key bindings
@@ -167,4 +169,12 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 ## Python virtualenvs
 
 Activate a virtualenv with `M-x venv-workon`. LSP restarts automatically to pick up the new interpreter.
+
+## SQL / PostgreSQL
+
+- `M-x sql-postgres` — connect to a Postgres database interactively
+- `C-c C-r` — send region to SQL REPL
+- `C-c C-b` — send buffer to SQL REPL
+- Auto-formats on save via `pgformatter` (requires `brew install pgformatter`)
+- `sql-indent` provides smart indentation in `.sql` files
 

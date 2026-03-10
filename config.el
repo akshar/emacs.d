@@ -496,6 +496,19 @@
   :hook (prog-mode . breadcrumb-mode))
 
 ;; ---------------------------------------------------------------------------
+;; SQL / PostgreSQL
+;; ---------------------------------------------------------------------------
+(use-package sql-indent
+  :ensure t
+  :hook (sql-mode . sqlind-minor-mode))
+
+(use-package sqlformat
+  :ensure t
+  :custom
+  (sqlformat-command 'pgformatter)
+  :hook (sql-mode . sqlformat-on-save-mode))
+
+;; ---------------------------------------------------------------------------
 ;; Try (test packages without installing)
 ;; ---------------------------------------------------------------------------
 (use-package try :ensure t :defer 4)
