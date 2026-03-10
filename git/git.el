@@ -1,6 +1,15 @@
 (use-package git-gutter
   :ensure t
   :defer 2
+  :custom
+  (git-gutter:update-interval 0)
+  ;; Empty list = no post-command updates at all.
+  ;; We trigger manually via an idle timer after save so it never blocks a command.
+  (git-gutter:update-commands '())
+  :config
+  (defun my/git-gutter-update-after-save ()
+    (run-with-idle-timer 0.5 nil #'git-gutter))
+  (add-hook 'after-save-hook #'my/git-gutter-update-after-save)
   :init (global-git-gutter-mode t))
 
 (use-package git-timemachine

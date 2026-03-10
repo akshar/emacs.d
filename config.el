@@ -24,11 +24,53 @@
 (scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; ---------------------------------------------------------------------------
+;; Redisplay / font-lock performance
+;; ---------------------------------------------------------------------------
+;; Defer fontification — buffer appears immediately, highlighting fills in after.
+(setq jit-lock-defer-time 0.1)
+
+;; Don't re-fontify while actively typing.
+(setq redisplay-skip-fontification-on-input t)
+
+;; Stealth fontification: process un-highlighted regions in small chunks during
+;; idle time instead of one large blocking burst when the defer timer fires.
+(setq jit-lock-stealth-time 2
+      jit-lock-stealth-nice 0.2
+      jit-lock-stealth-verbose nil)
+
+;; Reduce treesitter highlight detail.
+;; Default is 3. Level 2 = keywords/strings/functions/types only.
+(setq treesit-font-lock-level 2)
+
+;; so-long-mode: built-in, disables font-lock/line-numbers/etc for large files.
+;; Default only triggers on long-line files. Extend it to also trigger on large
+;; files by size — TypeScript files in large dirs have normal line lengths but can
+;; be huge, which is why so-long never fired before.
+(global-so-long-mode 1)
+(setq so-long-threshold 500          ; characters per line (keep default-ish)
+      so-long-max-lines 5)           ; lines to check for long-line detection
+(setq so-long-predicate
+      (lambda ()
+        ;; Trigger on long lines (original behavior) OR large file (new).
+        (or (so-long-detected-long-line-p)
+            (> (buffer-size) (* 100 1024)))))  ; 100 KB
+
+;; Add our custom modes to so-long's disable list (font-lock-mode is already there).
+(dolist (mode '(indent-bars-mode git-gutter-mode beacon-mode))
+  (add-to-list 'so-long-minor-modes mode))
+
+;; ---------------------------------------------------------------------------
+
 (global-display-line-numbers-mode)
 (defalias 'list-buffers 'ibuffer)
 (windmove-default-keybindings)
 (global-hl-line-mode t)
 (global-auto-revert-mode 1)
+;; Use OS file-system notifications (kqueue on macOS) instead of polling.
+;; Without this, Emacs polls every `auto-revert-interval` seconds per buffer.
+(setq auto-revert-use-notify t
+      auto-revert-avoid-polling t)
 
 ;; ---------------------------------------------------------------------------
 ;; Custom functions + global keybindings
@@ -95,7 +137,8 @@
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-height 28)
-  (doom-modeline-buffer-file-name-style 'truncate-upto-project)
+  ;; truncate-upto-root avoids calling projectile on every modeline redraw.
+  (doom-modeline-buffer-file-name-style 'truncate-upto-root)
   (doom-modeline-icon t)
   (doom-modeline-major-mode-icon t))
 
@@ -195,6 +238,9 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   :config
   (setq cape-file-directory-must-exist nil)
+  ;; Limit dabbrev to current buffer only — scanning all open buffers is very
+  ;; slow in large dirs where you may have dozens of large files open.
+  (setq cape-dabbrev-check-other-buffers nil)
 
   (defun my/cape-file-in-string-setup ()
     "Prepend string-aware cape-file to buffer-local completion-at-point-functions."
@@ -244,7 +290,15 @@
   (projectile-global-mode)
   (setq projectile-completion-system 'default)
   (setq-default projectile-enable-caching t
-                projectile-mode-line '(:eval (projectile-project-name))))
+                projectile-mode-line '(:eval (projectile-project-name)))
+  ;; alien = git ls-files; it respects .gitignore but ignores the list below.
+  ;; The list below only applies when indexing-method is 'hybrid or 'native.
+  (dolist (dir '("node_modules" "dist" "build" ".next" ".turbo"
+                 "coverage" ".cache" "__pycache__" ".git"))
+    (add-to-list 'projectile-globally-ignored-directories dir))
+  (setq projectile-indexing-method 'alien)
+  ;; Don't scan git submodules — adds latency in large dirs.
+  (setq projectile-git-submodule-command nil))
 
 (global-set-key (kbd "s-t") 'projectile-find-file)
 (global-set-key (kbd "s-g") 'projectile-grep)
@@ -270,15 +324,18 @@
 (use-package flycheck
   :ensure t
   :custom
-  ;; Don't run checker immediately on file open — wait for first save or idle
   (flycheck-check-syntax-automatically '(save idle-change))
   (flycheck-idle-change-delay 2.0)
-  ;; Disable flycheck for JS/TS — eglot+flymake handles diagnostics there
   (flycheck-disabled-checkers '(javascript-eslint
                                 javascript-jshint
                                 javascript-standard
                                 typescript-tslint))
-  :init (global-flycheck-mode t))
+  ;; Don't run globally — eglot/flymake handles JS/TS/Go diagnostics.
+  ;; Enable selectively only in modes that actually have useful checkers.
+  :hook ((clojure-mode       . flycheck-mode)
+         (clojurescript-mode . flycheck-mode)
+         (python-ts-mode     . flycheck-mode)
+         (sh-mode            . flycheck-mode)))
 
 ;; ---------------------------------------------------------------------------
 ;; Beacon
@@ -352,7 +409,12 @@
 ;; ---------------------------------------------------------------------------
 (use-package rainbow-delimiters
   :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
+  ;; Don't enable for treesitter-based modes — treesitter already provides
+  ;; structural highlighting and rainbow-delimiters doubles the overlay work.
+  :hook ((clojure-mode       . rainbow-delimiters-mode)
+         (clojurescript-mode . rainbow-delimiters-mode)
+         (emacs-lisp-mode    . rainbow-delimiters-mode)
+         (python-ts-mode     . rainbow-delimiters-mode)))
 
 ;; ---------------------------------------------------------------------------
 ;; Multiple Cursors
@@ -476,7 +538,8 @@
 ;; ---------------------------------------------------------------------------
 (use-package symbol-overlay
   :ensure t
-  :hook (prog-mode . symbol-overlay-mode)
+  ;; Don't auto-enable overlay mode globally — auto-highlighting on every cursor
+  ;; move is expensive in large dirs. Use M-i to highlight on demand.
   :bind (("M-i" . symbol-overlay-put)
          ("M-n" . symbol-overlay-jump-next)
          ("M-p" . symbol-overlay-jump-prev)
@@ -487,6 +550,12 @@
 ;; ---------------------------------------------------------------------------
 (use-package indent-bars
   :ensure t
+  ;; prefer-character uses a plain Unicode bar character instead of bitmap
+  ;; stipples. Stipple mode redraws every visible line on every scroll/redisplay;
+  ;; character mode is significantly lighter (just a text glyph).
+  :custom
+  (indent-bars-prefer-character t)
+  (indent-bars-no-descend-string t)
   :hook ((prog-mode . indent-bars-mode)
          (yaml-mode . indent-bars-mode)))
 
@@ -495,7 +564,9 @@
 ;; ---------------------------------------------------------------------------
 (use-package eldoc-box
   :ensure t
-  :hook (prog-mode . eldoc-box-hover-mode))
+  ;; Only enable when eglot is actually managing the buffer.
+  ;; prog-mode hook was adding post-command overhead to every buffer.
+  :hook (eglot-managed-mode . eldoc-box-hover-mode))
 
 ;; ---------------------------------------------------------------------------
 ;; Breadcrumb — file path + symbol breadcrumb in header line (via LSP)

@@ -7,7 +7,9 @@
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold 800000)
+            ;; 64 MB — large enough to avoid GC pauses during normal editing.
+            ;; 800 KB was causing constant pauses in large dirs.
+            (setq gc-cons-threshold (* 64 1024 1024))
             (message "Emacs ready in %s with %d garbage collections."
                      (format "%.2f seconds"
                              (float-time
@@ -18,7 +20,7 @@
   (setq gc-cons-threshold most-positive-fixnum))
 
 (defun my-minibuffer-exit-hook ()
-  (setq gc-cons-threshold 800000))
+  (setq gc-cons-threshold (* 64 1024 1024)))
 
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook  #'my-minibuffer-exit-hook)

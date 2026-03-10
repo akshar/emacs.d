@@ -24,7 +24,10 @@
 
 (use-package treesit-auto
   :ensure t
-  :custom (treesit-auto-install t)
+  :custom
+  ;; 'prompt instead of t — auto t blocks file open to download grammars.
+  ;; Run M-x treesit-auto-install-all once to pre-install all grammars.
+  (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist '(typescript tsx javascript json))
   (global-treesit-auto-mode))
@@ -38,8 +41,11 @@
 (use-package apheleia
   :ensure t
   :config
+  ;; Use prettier directly (not via npx) — npx adds 300-500ms per format call
+  ;; because it resolves the package registry. Apheleia already resolves the
+  ;; nearest node_modules/.bin binary automatically when using "prettier" here.
   (setf (alist-get 'prettier apheleia-formatters)
-        '(npx "prettier" "--stdin-filepath" filepath))
+        '("prettier" "--stdin-filepath" filepath))
   (dolist (entry '((typescript-ts-mode . prettier)
                    (tsx-ts-mode        . prettier)
                    (js-ts-mode         . prettier)

@@ -1,18 +1,24 @@
 ;;; lsp.el --- LSP configuration (corfu-compatible) -*- lexical-binding: t -*-
 
 ;; ---------------------------------------------------------------------------
-;; Eglot — JS/TS (built-in Emacs 30, one server per monorepo root)
+;; Eglot — JS/TS (built-in Emacs 30, one server per project root)
 ;; To switch to lsp-mode: comment this block and uncomment the JS/TS hooks below.
 ;; ---------------------------------------------------------------------------
+(defun my/eglot-ensure-idle ()
+  "Start eglot after a short idle delay so file open feels instant."
+  (run-with-idle-timer 0.5 nil #'eglot-ensure))
+
 (use-package eglot
-  :hook ((js-mode            . eglot-ensure)
-         (js-jsx-mode        . eglot-ensure)
-         (js-ts-mode         . eglot-ensure)
-         (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode        . eglot-ensure))
+  :hook ((js-mode            . my/eglot-ensure-idle)
+         (js-jsx-mode        . my/eglot-ensure-idle)
+         (js-ts-mode         . my/eglot-ensure-idle)
+         (typescript-ts-mode . my/eglot-ensure-idle)
+         (tsx-ts-mode        . my/eglot-ensure-idle))
   :custom
   (eglot-autoshutdown t)
-  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
+  (eglot-sync-connect nil)
+  ;; documentHighlight floods large files; inlayHints can be slow in large dirs.
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
   :config
   (setq completion-category-overrides '((eglot (styles orderless))
                                         (eglot-capf (styles orderless)))))
