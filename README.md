@@ -1,6 +1,6 @@
 # Emacs Configuration
 
-Modern Emacs 30 configuration with LSP, tree-sitter-ready structure, and a clean modular layout.
+Modern Emacs 30 configuration with LSP, tree-sitter, and a clean modular layout. Tuned for performance in large dirs.
 
 ## Requirements
 
@@ -20,11 +20,13 @@ ln -s /opt/homebrew/opt/emacs-plus@30/Emacs.app /Applications
 
 ### System tools
 ```bash
-brew install ripgrep              # fast search (consult-ripgrep)
+brew install ripgrep              # fast search (consult-ripgrep, C-c k / C-c j)
 brew install the_silver_searcher  # ag search
+brew install fd                   # fast file finder (consult-fd)
 pip install grip                  # Markdown preview (uses pyenv Python)
 brew install enchant              # jinx spell checking
 brew install cmake libvterm       # vterm terminal emulator
+brew install pgformatter          # SQL formatter
 ```
 
 ### Credentials
@@ -52,7 +54,7 @@ brew install cmake libvterm       # vterm terminal emulator
 **Option 1 — automatic (try this first):**
 
 ```
-M-x treesit-auto-install-grammars
+M-x treesit-auto-install-all
 ```
 
 **Option 2 — manual compile (fallback if option 1 fails):**
@@ -79,7 +81,7 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 2. `git clone <repo-url> ~/.emacs.d`
 3. Launch Emacs — packages install automatically
 4. Run `M-x nerd-icons-install-fonts` and `M-x all-the-icons-install-fonts`
-5. Install tree-sitter grammars (see Tree-sitter grammars section above)
+5. Install tree-sitter grammars (see above)
 6. Restart Emacs
 
 ## Structure
@@ -88,10 +90,10 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 ~/.emacs.d/
 ├── init.el          # entry point: package setup, loads modules
 ├── config.el        # core: UI, completion, navigation, editing
-├── lsp.el           # LSP mode (lsp-mode + lsp-ui)
+├── lsp.el           # eglot (JS/TS) + lsp-mode (Go, Clojure)
 ├── ai.el            # gptel (Claude/AI chat)
 ├── lang/
-│   ├── web.el       # web-mode, emmet, scss, json, yaml
+│   ├── web.el       # treesit-auto, apheleia, web-mode, emmet, scss, json, yaml
 │   ├── python.el    # lsp-pyright, virtualenvwrapper
 │   ├── GO.el        # go-mode + lsp
 │   ├── clojure.el   # clojure-mode, cider, paredit, clj-kondo
@@ -107,10 +109,10 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 | Category | Package |
 |----------|---------|
 | Completion UI | vertico + orderless + marginalia |
-| Search/navigation | consult |
+| Search/navigation | consult + ripgrep |
 | In-buffer completion | corfu + cape + nerd-icons-corfu |
-| LSP | lsp-mode + lsp-ui (Go, Clojure) |
-| JS/TS LSP | eglot (built-in, faster for monorepos) |
+| LSP (Go, Clojure) | lsp-mode + lsp-ui |
+| LSP (JS/TS) | eglot (built-in, lighter weight) |
 | JS/TS syntax | treesit-auto (tree-sitter grammars) |
 | Formatting | apheleia (async prettier on save) |
 | Theme | doom-one (doom-themes) |
@@ -137,10 +139,10 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 |-----|---------|
 | `C-s` | Search in buffer (consult-line) |
 | `C-x b` | Switch buffer (consult-buffer) |
-| `C-c k` | Ripgrep search |
-| `C-c j` | Git grep |
+| `C-c k` | Ripgrep search across project |
+| `C-c j` | Git grep across project (consult-git-grep) |
 | `C-c p` | Projectile commands |
-| `s-t` | Find file in project |
+| `s-t` | Find file in project (projectile-find-file) |
 | `s-p` | Switch project |
 | `M-g f` | Jump to definition (dumb-jump) |
 | `M-g b` | Jump back |
@@ -152,11 +154,51 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 | `C-x g` | Magit status |
 | `s-Z` | Undo tree redo |
 | `M-s` | Avy char timer jump |
+| `M-i` | Highlight symbol at point (symbol-overlay) |
+| `M-n` / `M-p` | Jump to next/prev symbol occurrence |
 | `C-,` | Embark act (context actions) |
 | `C-;` | Embark dwim |
 | `M-$` | Jinx correct (spell check) |
 | `C-c t` | Open vterm terminal |
 | `M-x gptel` | Open AI chat buffer |
+
+## Find and Replace (VSCode equivalent)
+
+Emacs equivalent of VSCode's `Ctrl+Shift+H` project-wide find and replace:
+
+1. **`C-c k`** — open `consult-ripgrep`, search for the term
+2. **`C-c C-p`** in the results buffer — switch to `wgrep` (editable grep) mode
+3. Edit any occurrence — changes propagate to all matched lines
+4. **`C-c C-c`** — apply all edits and save affected files
+5. **`C-c C-k`** — abort and discard changes
+
+For a simple string replace across the project without grep: `C-c p r` (`projectile-replace`).
+
+## JS/TS — Eglot
+
+JS/TS uses **eglot** (built into Emacs 30) instead of lsp-mode:
+- One tsserver instance per project root — not per `tsconfig.json`
+- Async connection (`eglot-sync-connect nil`) — file opens immediately, LSP connects in background
+- `documentHighlight` and `inlayHint` disabled — both are expensive in large files
+
+To switch back to lsp-mode, see the comments in `lsp.el` — both configs are preserved.
+
+## Performance (large dirs)
+
+Several settings are tuned for working in large project trees:
+
+- **`gc-cons-threshold` 64MB** — avoids constant GC pauses while typing
+- **`so-long-mode`** — auto-disables font-lock, indent-bars, line numbers, git-gutter for files > 100KB
+- **`jit-lock-defer-time 0.1`** — buffer appears instantly; treesitter highlighting fills in after
+- **`redisplay-skip-fontification-on-input t`** — no re-highlight while typing
+- **`treesit-font-lock-level 2`** — keywords/strings/functions/types only; skips fine-grained tokens
+- **`projectile-indexing-method 'alien`** — uses `git ls-files` for file listing (respects `.gitignore`)
+- **`git-gutter`** updates only on save (not on every keystroke or idle timer)
+- **`cape-dabbrev-check-other-buffers nil`** — dabbrev only scans current buffer
+
+## Flycheck
+
+Flycheck runs only in modes with useful checkers: Clojure, Python, shell scripts. JS/TS and Go diagnostics are handled by eglot/flymake natively.
 
 ## Clojure
 
@@ -166,18 +208,6 @@ Grammars are compiled into `~/.emacs.d/tree-sitter/` and only need to be install
 - `M-.` — go to definition (via clojure-lsp)
 - `M-x lsp-rename` — workspace rename (via clojure-lsp)
 - Linting via clj-kondo (flycheck)
-
-## JS/TS — Eglot vs lsp-mode
-
-JS/TS uses **eglot** (built into Emacs 30) instead of lsp-mode. Reasons:
-- Single server instance per monorepo root (no new tsserver per `tsconfig.json`)
-- Lighter weight, faster file open in large pnpm/turbo monorepos
-
-To switch back to lsp-mode, see the comments in `lsp.el` — both configs are preserved.
-
-## Flycheck
-
-Flycheck is configured to **not run on file open** — only on save or after 2s of idle. JS/TS checkers are disabled since eglot+flymake handles diagnostics natively.
 
 ## Python virtualenvs
 
@@ -190,4 +220,3 @@ Activate a virtualenv with `M-x venv-workon`. LSP restarts automatically to pick
 - `C-c C-b` — send buffer to SQL REPL
 - Auto-formats on save via `pgformatter` (requires `brew install pgformatter`)
 - `sql-indent` provides smart indentation in `.sql` files
-

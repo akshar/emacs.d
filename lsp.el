@@ -2,29 +2,30 @@
 
 ;; ---------------------------------------------------------------------------
 ;; Eglot — JS/TS (built-in Emacs 30, one server per project root)
-;; To switch to lsp-mode: comment this block and uncomment the JS/TS hooks below.
+;; Currently disabled — using lsp-mode for JS/TS instead.
+;; To re-enable: uncomment this block and comment out the JS/TS hooks in lsp-mode below.
 ;; ---------------------------------------------------------------------------
-(defun my/eglot-ensure-idle ()
-  "Start eglot after a short idle delay so file open feels instant."
-  (run-with-idle-timer 0.5 nil #'eglot-ensure))
-
-(use-package eglot
-  :hook ((js-mode            . my/eglot-ensure-idle)
-         (js-jsx-mode        . my/eglot-ensure-idle)
-         (js-ts-mode         . my/eglot-ensure-idle)
-         (typescript-ts-mode . my/eglot-ensure-idle)
-         (tsx-ts-mode        . my/eglot-ensure-idle))
-  :custom
-  (eglot-autoshutdown t)
-  (eglot-sync-connect nil)
-  ;; documentHighlight floods large files; inlayHints can be slow in large dirs.
-  (eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
-  :config
-  (setq completion-category-overrides '((eglot (styles orderless))
-                                        (eglot-capf (styles orderless)))))
+;; (defun my/eglot-ensure-idle ()
+;;   "Start eglot after a short idle delay so file open feels instant."
+;;   (run-with-idle-timer 0.5 nil #'eglot-ensure))
+;;
+;; (use-package eglot
+;;   :hook ((js-mode            . my/eglot-ensure-idle)
+;;          (js-jsx-mode        . my/eglot-ensure-idle)
+;;          (js-ts-mode         . my/eglot-ensure-idle)
+;;          (typescript-ts-mode . my/eglot-ensure-idle)
+;;          (tsx-ts-mode        . my/eglot-ensure-idle))
+;;   :custom
+;;   (eglot-autoshutdown t)
+;;   (eglot-sync-connect nil)
+;;   ;; documentHighlight floods large files; inlayHints can be slow in large dirs.
+;;   (eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
+;;   :config
+;;   (setq completion-category-overrides '((eglot (styles orderless))
+;;                                         (eglot-capf (styles orderless)))))
 
 ;; ---------------------------------------------------------------------------
-;; lsp-mode — Go, Clojure (JS/TS via eglot above)
+;; lsp-mode — JS/TS, Go, Clojure
 ;; ---------------------------------------------------------------------------
 (defun my/lsp-mode-setup-completion ()
   "Configure orderless for lsp-mode completions."
@@ -44,12 +45,11 @@
   (lsp-javascript-suggest-auto-imports t)
   :hook ((lsp-mode            . lsp-enable-which-key-integration)
          (lsp-completion-mode . my/lsp-mode-setup-completion)
-         ;; JS/TS via lsp-mode — commented out, using eglot instead
-         ;; (js-mode             . lsp-deferred)
-         ;; (js-jsx-mode         . lsp-deferred)
-         ;; (typescript-ts-mode  . lsp-deferred)
-         ;; (tsx-ts-mode         . lsp-deferred)
-         ;; (js-ts-mode          . lsp-deferred)
+         (js-mode             . lsp-deferred)
+         (js-jsx-mode         . lsp-deferred)
+         (typescript-ts-mode  . lsp-deferred)
+         (tsx-ts-mode         . lsp-deferred)
+         (js-ts-mode          . lsp-deferred)
          (go-mode             . lsp)
          (clojure-mode        . lsp-deferred)
          (clojurescript-mode  . lsp-deferred)

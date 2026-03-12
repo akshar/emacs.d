@@ -39,9 +39,9 @@
       jit-lock-stealth-nice 0.2
       jit-lock-stealth-verbose nil)
 
-;; Reduce treesitter highlight detail.
-;; Default is 3. Level 2 = keywords/strings/functions/types only.
-(setq treesit-font-lock-level 2)
+;; Level 4 = maximum highlighting (operators, type params, decorators, everything).
+;; Large files (>100KB) have font-lock disabled entirely by so-long-mode anyway.
+(setq treesit-font-lock-level 4)
 
 ;; so-long-mode: built-in, disables font-lock/line-numbers/etc for large files.
 ;; Default only triggers on long-line files. Extend it to also trigger on large
@@ -132,15 +132,15 @@
 ;; ---------------------------------------------------------------------------
 (use-package nerd-icons :ensure t)
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-height 28)
-  ;; truncate-upto-root avoids calling projectile on every modeline redraw.
-  (doom-modeline-buffer-file-name-style 'truncate-upto-root)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon t))
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1)
+;;   :custom
+;;   (doom-modeline-height 28)
+;;   ;; truncate-upto-root avoids calling projectile on every modeline redraw.
+;;   (doom-modeline-buffer-file-name-style 'truncate-upto-root)
+;;   (doom-modeline-icon t)
+;;   (doom-modeline-major-mode-icon t))
 
 ;; ---------------------------------------------------------------------------
 ;; Completion: vertico + orderless + consult + marginalia
@@ -186,7 +186,15 @@
   (consult-project-function (lambda (_) (projectile-project-root)))
   :config
   (setq xref-show-xrefs-function       #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+        xref-show-definitions-function #'consult-xref)
+  ;; Don't preview on every arrow key — only after 0.5s idle or on M-.
+  ;; Without this, navigating ripgrep results opens a file per keypress.
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   :preview-key '(:debounce 0.5 any))
+  (consult-customize
+   consult-buffer consult-line
+   :preview-key '(:debounce 0.3 any)))
 
 (use-package savehist
   :ensure nil
@@ -210,9 +218,9 @@
   (corfu-popupinfo-max-width  70)
   (corfu-popupinfo-max-height 20)
   :bind (:map corfu-map
-         ("C-n" . corfu-next)
-         ("C-p" . corfu-previous)
-         ("M-t" . corfu-popupinfo-toggle))
+              ("C-n" . corfu-next)
+              ("C-p" . corfu-previous)
+              ("M-t" . corfu-popupinfo-toggle))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -330,7 +338,7 @@
                                 javascript-jshint
                                 javascript-standard
                                 typescript-tslint))
-  ;; Don't run globally — eglot/flymake handles JS/TS/Go diagnostics.
+  ;; Don't run globally — lsp-mode handles JS/TS/Go diagnostics.
   ;; Enable selectively only in modes that actually have useful checkers.
   :hook ((clojure-mode       . flycheck-mode)
          (clojurescript-mode . flycheck-mode)
@@ -447,18 +455,18 @@
   ;; C-c C-c p  toggles it (built into markdown-mode).
   (setq markdown-live-preview-delete-export 'delete-on-export)
   :bind (:map markdown-mode-map
-         ("C-c C-p" . markdown-live-preview-mode)
-         :map gfm-mode-map
-         ("C-c C-p" . markdown-live-preview-mode)))
+              ("C-c C-p" . markdown-live-preview-mode)
+              :map gfm-mode-map
+              ("C-c C-p" . markdown-live-preview-mode)))
 
 ;; grip-mode: GitHub-accurate preview in browser (optional, needs: pip install grip).
 ;; Use when you need exact GitHub rendering.
 (use-package grip-mode
   :ensure t
   :bind (:map markdown-mode-map
-         ("C-c C-g" . grip-mode)
-         :map gfm-mode-map
-         ("C-c C-g" . grip-mode)))
+              ("C-c C-g" . grip-mode)
+              :map gfm-mode-map
+              ("C-c C-g" . grip-mode)))
 
 ;; markdown-toc: generate/update table of contents.
 ;; Usage: M-x markdown-toc-generate-toc
@@ -510,10 +518,10 @@
 ;; ---------------------------------------------------------------------------
 ;; Jinx — fast spell checker (requires: brew install enchant)
 ;; ---------------------------------------------------------------------------
-(use-package jinx
-  :ensure t
-  :hook (emacs-startup . global-jinx-mode)
-  :bind ("M-$" . jinx-correct))
+;; (use-package jinx
+;;   :ensure t
+;;   :hook (emacs-startup . global-jinx-mode)
+;;   :bind ("M-$" . jinx-correct))
 
 ;; ---------------------------------------------------------------------------
 ;; CSV Mode
@@ -564,16 +572,15 @@
 ;; ---------------------------------------------------------------------------
 (use-package eldoc-box
   :ensure t
-  ;; Only enable when eglot is actually managing the buffer.
-  ;; prog-mode hook was adding post-command overhead to every buffer.
-  :hook (eglot-managed-mode . eldoc-box-hover-mode))
+  ;; Only enable when lsp is active — avoids post-command overhead on every buffer.
+  :hook (lsp-mode . eldoc-box-hover-mode))
 
 ;; ---------------------------------------------------------------------------
 ;; Breadcrumb — file path + symbol breadcrumb in header line (via LSP)
 ;; ---------------------------------------------------------------------------
 (use-package breadcrumb
   :ensure t
-  :hook (eglot-managed-mode . breadcrumb-mode))
+  :hook (lsp-mode . breadcrumb-mode))
 
 ;; ---------------------------------------------------------------------------
 ;; SQL / PostgreSQL
