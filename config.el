@@ -172,16 +172,34 @@
   :ensure t
   :init (marginalia-mode))
 
+;; Tell the compiler this is a special (dynamic) variable so let-binding it
+;; below doesn't trigger the lexical-var warning.
+(defvar consult-ripgrep-args)
+
+(defun my-consult-ripgrep-dir ()
+  "Run consult-ripgrep prompting for directory and optional exclude patterns."
+  (interactive)
+  (require 'consult)
+  (let* ((dir      (read-directory-name "Ripgrep in dir: " default-directory))
+         (excludes (read-string "Exclude globs, comma-separated (e.g. node_modules,*.test.ts) or blank: "))
+         (glob-args (mapconcat (lambda (p) (format "--glob=!%s" p))
+                               (split-string excludes "," t "\\s-*")
+                               " "))
+         (consult-ripgrep-args (concat consult-ripgrep-args
+                                       (unless (string-blank-p glob-args)
+                                         (concat " " glob-args)))))
+    (consult-ripgrep dir "")))  ;; Only 2 args: DIR + INITIAL
+
 (use-package consult
   :ensure t
-  :bind (("C-s"     . consult-line)        ; was swiper
-         ("M-y"     . consult-yank-pop)    ; was counsel-yank-pop
+  :bind (("C-s"     . consult-line)	; was swiper
+         ("M-y"     . consult-yank-pop)	; was counsel-yank-pop
          ("C-x b"   . consult-buffer)
-         ("C-c j"   . consult-git-grep)    ; was counsel-git-grep
-         ("C-c k"   . consult-ripgrep)     ; was counsel-ag
-         ("C-x l"   . consult-locate)      ; was counsel-locate
+         ("C-c j"   . consult-git-grep)	      ; was counsel-git-grep
+         ("C-c k"   . my-consult-ripgrep-dir) ; consult-ripgrep
+         ("C-x l"   . consult-locate)	      ; was counsel-locate
          :map minibuffer-local-map
-         ("C-r"     . consult-history))    ; was counsel-minibuffer-history
+         ("C-r"     . consult-history))	; was counsel-minibuffer-history
   :custom
   (consult-project-function (lambda (_) (projectile-project-root)))
   :config
